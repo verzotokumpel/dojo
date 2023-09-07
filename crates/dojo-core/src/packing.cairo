@@ -4,26 +4,23 @@ use traits::{Into, TryInto};
 use integer::{U256BitAnd, U256BitOr, U256BitXor, upcast, downcast, BoundedInt};
 use option::OptionTrait;
 
-#[derive(Copy, Drop)]
-struct LayoutItem {
-    value: felt252,
-    size: u8
-}
-
-fn pack(ref unpacked: Array<LayoutItem>) -> Span<felt252> {
+fn pack(ref unpacked: Span<felt252>, ref layout: Span<u8>) -> Span<felt252> {
+    // assert(unpacked.len() == layout.len(), "mismatched input lens");
     let mut packed: Array<felt252> = ArrayTrait::new();
     let mut packing: felt252 = 0x0;
     let mut offset: u8 = 0x0;
     loop {
         match unpacked.pop_front() {
-            Option::Some(s) => {
-                pack_inner(@s.value, s.size, ref packing, ref offset, ref packed);
+            Option::Some(item) => {
+                pack_inner(item, *layout.pop_front().unwrap(), ref packing, ref offset, ref packed);
             },
             Option::None(_) => {
-                break packed.span();
+                break;
             }
         };
-    }
+    };
+    packed.append(packing);
+    packed.span()
 }
 
 fn unpack(ref packed: Span<felt252>, ref layout: Span<u8>) -> Option<Span<felt252>> {
