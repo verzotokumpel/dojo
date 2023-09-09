@@ -70,12 +70,13 @@ trait StorageLayout<T> {
 impl StorageLayoutFelt252 of StorageLayout<felt252> {
     #[inline(always)]
     fn size() -> usize {
-        1
+        2
     }
 
     #[inline(always)]
     fn layout(ref layout: Array<u8>) {
-        layout.append(252);
+        layout.append(251);
+        layout.append(1);
     }
 }
 
