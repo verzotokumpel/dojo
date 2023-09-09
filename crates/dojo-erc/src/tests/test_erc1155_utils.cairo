@@ -5,6 +5,7 @@ use array::ArrayTrait;
 
 use starknet::ContractAddress;
 use starknet::syscalls::deploy_syscall;
+use starknet::SyscallResultTrait;
 use starknet::testing::set_contract_address;
 
 use dojo::test_utils::spawn_test_world;
@@ -89,7 +90,7 @@ fn deploy_erc1155(
     let (deployed_address, _) = deploy_syscall(
         ERC1155::TEST_CLASS_HASH.try_into().unwrap(), seed, constructor_calldata.span(), false
     )
-        .expect('error deploying ERC1155');
+        .unwrap_syscall();
 
     deployed_address
 }
